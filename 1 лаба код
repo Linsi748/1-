@@ -1,0 +1,22 @@
+void main () {
+    Scanner scan = new Scanner(System.in);
+    double N = scan.nextDouble();
+    double x = scan.nextDouble();
+    if (Math.abs(x)<1){
+        double sum = 0;
+        for (double i=0; i<=N; i++){
+            sum+= Math.pow(-1,i)*Math.pow(x,i)/ factorial(i);
+
+        }
+        System.out.println (sum);
+
+    }
+}
+
+double factorial(double a) {
+    double col = 1;
+    for (double j=1;j<=a;j++){
+        col*=j;
+    }
+    return col;
+}
