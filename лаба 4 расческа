@@ -1,0 +1,59 @@
+import java.util.Scanner;
+
+public class Main {
+    public static void main(String[] args) {
+
+        Scanner scan = new Scanner(System.in);
+
+        int[] values = new int[15];
+
+        System.out.println("Введите 15 целых чисел:");
+        for (int i = 0; i < values.length; i++) {
+            values[i] = scan.nextInt();
+        }
+
+
+        compSort(values);
+
+
+        int[] result = new int[15];
+        int k = 0;
+
+        result[k] = values[0];
+        k++;
+
+        for (int i = 1; i < values.length; i++) {
+            if (values[i] != values[i - 1]) {
+                result[k] = values[i];
+                k++;
+            }
+        }
+
+
+        System.out.println("Отсортированный массив без повторов:");
+        for (int i = 0; i < k; i++) {
+            System.out.print(result[i] + " ");
+        }
+    }
+
+
+    public static void compSort(int[] values) {
+        double factor = 1.247;
+        int step = values.length - 1;
+
+        while (step >= 1) {
+            for (int i = 0; i + step < values.length; i++) {
+                if (values[i] > values[i + step]) {
+                    swap(values, i, i + step);
+                }
+            }
+            step = (int)(step / factor);
+        }
+    }
+
+    public static void swap(int[] values, int i, int j) {
+        int temp = values[i];
+        values[i] = values[j];
+        values[j] = temp;
+    }
+}
