@@ -1,0 +1,69 @@
+import java.util.Scanner;
+
+class Main {
+    public static void main(String[] args) {
+        Scanner scan = new Scanner(System.in);
+
+        // 1) y = 3x + 5
+        System.out.println("Введите x:");
+        int x = scan.nextInt();
+        Primer p1 = new Primer(x, 0, 0);
+        p1.sum();
+
+        // 2) y = (a + b) / (a - b)
+        System.out.println("Введите a:");
+        int a = scan.nextInt();
+        System.out.println("Введите b:");
+        int b = scan.nextInt();
+        Primer p2 = new Primer(0, a, b);
+        p2.division();
+
+        // 3) y = (a * x / b)!
+        System.out.println("Введите a:");
+        int a1 = scan.nextInt();
+        System.out.println("Введите b:");
+        int b1 = scan.nextInt();
+        System.out.println("Введите x:");
+        int x1 = scan.nextInt();
+        Primer p3 = new Primer(x1, a1, b1);
+        p3.factorial();
+    }
+}
+
+class Primer {
+    int x;
+    int a;
+    int b;
+
+    Primer(int x, int a, int b) {
+        this.x = x;
+        this.a = a;
+        this.b = b;
+    }
+
+    void sum() {
+        System.out.println(3 * this.x + 5);
+    }
+
+    void division() {
+        if (a != b) {
+            double y = (double)(this.a + this.b) / (this.a - this.b);
+            System.out.println(y);
+        } else {
+            System.out.println("Деление на 0");
+        }
+    }
+
+    void factorial() {
+        if (b != 0) {
+            int n = this.a * this.x / this.b;
+            long f = 1;
+            for (int i = 1; i <= n; i++) {
+                f *= i;
+            }
+            System.out.println(f);
+        } else {
+            System.out.println("Деление на 0");
+        }
+    }
+}
