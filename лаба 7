@@ -1,0 +1,76 @@
+import java.util.Scanner;
+class Patient {
+    String familia;
+    String name;
+    String ochestvo;
+    String adres;
+    String diagnoz;
+    long nomercart;
+
+    Patient(String familia, String name, String ochestvo, String adres, String diagnoz, long nomercart) {
+        this.familia = familia;
+        this.name = name;
+        this.ochestvo = ochestvo;
+        this.adres = adres;
+        this.diagnoz = diagnoz;
+        this.nomercart = nomercart;
+
+    }
+    void printInfo() {
+        System.out.println(familia + " " + name + " " + ochestvo + "\nАдрес: " + adres + "\nТелефон: " + diagnoz + "\nКарта: " + nomercart );
+    }
+}
+public class Main {
+    public static void main(String[] args) {
+        Scanner scanner = new Scanner(System.in);
+        Patient[] patient = new Patient[5];
+        patient[0] = new Patient(
+                "Иванов", "Алексей", "Петрович",
+                "г. Москва, ул. Ленина, д. 15, кв. 42",
+                "ponos",
+                1234567890123456L
+
+        );
+        patient[1] = new Patient(
+                "Петрова", "Мария", "Сергеевна",
+                "г. Санкт-Петербург, пр. Невский, д. 25",
+                "zolotukha",
+                2345678901234567L
+
+        );
+        patient[2] = new Patient(
+                "Сидоров", "Дмитрий", "Андреевич",
+                "г. Казань, ул. Баумана, д. 8",
+                "papiloma",
+                3456789012345678L
+        );
+        patient[3] = new Patient(
+                "Козлова", "Елена", "Владимировна",
+                "г. Новосибирск, ул. Кирова, д. 45",
+                "smert",
+                4567890123456789L
+
+        );
+        patient[4] = new Patient(
+                "Николаев", "Андрей", "Иванович",
+                "г. Екатеринбург, ул. Малышева, д. 77",
+                "gerpes",
+                5678901234567890L
+
+        );
+        System.out.print("Введите диагноз пациента: ");
+        String Diagnoz = scanner.nextLine();
+        boolean found = false;
+        for (Patient c : patient) {
+            if (c.diagnoz.equals(Diagnoz)) {
+                {
+                    c.printInfo();
+                    found = true;
+                }
+            }
+            if (found == false) {
+                System.out.println("Клиенты с таким диагнозом не найдены.");
+            }
+        }
+    }
+}
