@@ -1,0 +1,197 @@
+interface Product{
+    void nameProduct();
+    void priceProduct();
+    void ratingProduct();
+}
+
+class classProduct implements Product{
+    String name;
+    int price;
+    double rating;
+
+    classProduct(String name, int price,double rating) {
+        this.name = name;
+        this.price = price;
+        this.rating = rating;
+    }
+
+    public void nameProduct() {
+        System.out.println("Продукт:"+name);
+    }
+    public void priceProduct(){
+        System.out.println("Стоимость:"+price);
+    }
+    public void ratingProduct(){
+        System.out.println("Рейтинг:"+rating);
+    }
+
+}
+class classProduct2 implements Product {
+    String name;
+    int price;
+    double rating;
+
+    classProduct2(String name, int price, double rating) {
+        this.name = name;
+        this.price = price;
+        this.rating = rating;
+    }
+
+    public void nameProduct() {
+        System.out.println("Продукт:" + name);
+    }
+
+    public void priceProduct() {
+        System.out.println("Стоимость:" + price);
+    }
+
+    public void ratingProduct() {
+        System.out.println("Рейтинг:" + rating);
+    }
+}
+class classProduct3 implements Product {
+    String name;
+    int price;
+    double rating;
+
+    classProduct3(String name, int price, double rating) {
+        this.name = name;
+        this.price = price;
+        this.rating = rating;
+    }
+
+    public void nameProduct() {
+        System.out.println("Продукт:" + name);
+    }
+
+    public void priceProduct() {
+        System.out.println("Стоимость:" + price);
+    }
+
+    public void ratingProduct() {
+        System.out.println("Рейтинг:" + rating);
+    }
+}
+
+interface User{
+    void LogLogin();
+    void PasPassword();
+}
+class User1 implements User {
+    private  String Login;
+    private  String Password;
+
+    User1(String Login, String Password) {
+        this.Login = Login;
+        this.Password = Password;
+    }
+
+    public void LogLogin(){
+        System.out.println("Логин:"+Login);
+    }
+    public void PasPassword(){
+        System.out.println("Пароль:"+Password);
+    }
+
+    public String getLogin(){
+        return this.Login ;
+    }
+}
+class User2 implements User {
+    private String Login;
+    private String Password;
+
+    User2(String Login, String Password) {
+        this.Login = Login;
+        this.Password = Password;
+    }
+
+    public void LogLogin() {
+        System.out.println("Логин: " + Login);
+    }
+
+    public void PasPassword() {
+        System.out.println("Пароль: " + Password);
+    }
+
+    public String getLogin() {
+        return this.Login;
+    }
+}
+class User3 implements User {
+    private String Login;
+    private String Password;
+
+    User3(String Login, String Password) {
+        this.Login = Login;
+        this.Password = Password;
+    }
+
+    public void LogLogin() {
+        System.out.println("Логин: " + Login);
+    }
+
+    public void PasPassword() {
+        System.out.println("Пароль: " + Password);
+    }
+
+    public String getLogin() {
+        return this.Login;
+    }
+}
+class ProductUser implements Product, User {
+    private String Login;
+    private String Password;
+    String name;
+    int price;
+    double rating;
+
+    ProductUser(String Login, String Password, String name, int price, double rating) {
+        this.Login = Login;
+        this.Password = Password;
+        this.name = name;
+        this.price = price;
+        this.rating = rating;
+    }
+
+    public void LogLogin() {
+        System.out.println("Логин: " + Login);
+    }
+
+    public void PasPassword() {
+        System.out.println("Пароль: " + Password);
+    }
+
+    public void nameProduct() {
+        System.out.println("Продукт: " + name);
+    }
+
+    public void priceProduct() {
+        System.out.println("Стоимость: " + price);
+    }
+
+    public void ratingProduct() {
+        System.out.println("Рейтинг: " + rating);
+    }
+
+    public void buyProduct() {
+        System.out.println("Пользователь " + Login + " купил товар " +
+
+
+name + " за " + price );
+    }
+}
+void main() {
+    classProduct P = new classProduct("йогурт",120,4.00);
+    classProduct2 P2 = new classProduct2 ("тунец",215,2.68);
+    classProduct3 P3 = new classProduct3("окорок ",812,4.87);
+
+    User1 U = new User1("goloh","12345");
+    User2 U2 = new User2("freu", "6789");
+    User3 U3 = new User3("oslok", "pdlo54");
+
+    ProductUser PU = new ProductUser("titi", "tutu", "хлеб", 150, 4.99);
+
+    PU.buyProduct();
+
+}
