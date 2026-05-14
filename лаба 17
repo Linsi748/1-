@@ -1,0 +1,42 @@
+import java.io.*;
+import java.util.Scanner;
+
+class Primer implements Serializable {
+    double x, y;
+    Primer(double x) { this.x = x; }
+    void calc() { y = x - Math.sin(x); System.out.println("Y = " + y); }
+}
+
+public class Main {
+    public static void main(String[] args) throws Exception {
+        Scanner scan = new Scanner(System.in);
+        System.out.print("Введите х: ");
+        Primer calculator = new Primer(scan.nextDouble());
+        String file = "Save.txt";
+
+        while (true) {
+            System.out.print("calc / save / upload / exit: ");
+            String cmd = scan.next();
+            if (cmd.equals("calc")) {
+                calculator.calc();
+            } else if (cmd.equals("save")) {
+                try (ObjectOutputStream oos = new ObjectOutputStream(new FileOutputStream(file))) {
+                    oos.writeObject(calculator);
+                    System.out.println("Сохранено");
+                }
+            } else if (cmd.equals("upload")) {
+                try (ObjectInputStream ois = new ObjectInputStream(new FileInputStream(file))) {
+                    calculator = (Primer) ois.readObject();
+                    System.out.println("Загружено: x=" + calculator.x + " y=" + calculator.y);
+                }
+            } else if (cmd.equals("exit")) {
+                break;
+            } else {
+                System.out.println("?");
+            }
+        }
+        scan.close();
+    }
+}
+
+
