@@ -5,8 +5,8 @@ import java.io.FileWriter;
 public class Main {
     public static void main(String[] args) {
      
-        String file = "source.txt";      // исходный файл с комментариями
-        String newfile = "result.txt";   // результирующий файл без комментариев
+        String file = "source.txt";     
+        String newfile = "result.txt";  
 
         File file1 = new File(file);
         File file2 = new File(newfile);
@@ -24,7 +24,7 @@ public class Main {
                     for (int i = 0; i < res.length(); i++) {
                         fw.write(res.charAt(i));
                     }
-                    System.out.println("Файл сохранен!");
+                    System.out.println("Файл сохранен");
                 }
             }
            
