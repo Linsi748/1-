@@ -1,0 +1,100 @@
+import java.util.Scanner;
+import java.util.ArrayList;
+import java.util.List;
+
+class Main {
+    public static void main(String[] args) {
+        List<User> users = new ArrayList<>();
+        users.add(new Teacher("Максим Максимович Максимов", 25, "преподаватель физры", "Fizruk", "12345"));
+        users.add(new Teacher("Иванов Иван Иванович", 67, "преподаватель ОБЖ", "obg2", "6789"));
+        users.add(new Student("Гарькавая Полина Юрьевна", 18, "ученик 11 класса", "halapoi", "good"));
+        users.add(new Student("Пушкарева Алла Евгеньевна", 12, "ученица 6 класса", "papopa", "676767"));
+
+        Scanner scan = new Scanner(System.in);
+        System.out.println("Введите логин пользователя:");
+        String inputLogin = scan.nextLine();
+
+        boolean found = false;
+        for (User user : users) {
+            if (user.getLogin().equals(inputLogin)) {
+                user.login();
+                user.password();
+                found = true;
+                break;
+            }
+        }
+
+        if (!found) {
+            System.out.println("Пользователь с таким логином не найден.");
+        }
+
+        scan.close();
+    }
+}
+
+interface User {
+    void login();
+    void password();
+    String getLogin(); // Добавлен метод для получения логина
+}
+
+abstract class People implements User {
+    String fullName;
+    int age;
+    String position;
+    String login;
+    String password;
+
+    People(String fullName, int age, String position, String login, String password) {
+        this.fullName = fullName;
+        this.age = age;
+        this.position = position;
+        this.login = login;
+        this.password = password;
+    }
+
+    @Override
+    public abstract void login();
+
+    @Override
+    public abstract void password();
+
+    // Реализуем метод для интерфейса
+    @Override
+    public String getLogin() {
+        return this.login;
+    }
+}
+
+class Student extends People {
+    Student(String fullName, int age, String position, String login, String password) {
+        super(fullName, age, position, login, password);
+    }
+
+    @Override
+    public void login() {
+        System.out.println("Логин: " + this.login);
+    }
+
+    @Override
+    public void password() {
+        System.out.println("Пароль: " + this.password);
+    }
+}
+
+class Teacher extends People {
+    Teacher(String fullName, int age, String position, String login, String password) {
+        super(fullName, age, position, login, password);
+    }
+
+    @Override
+    public void login() {
+        System.out.println("Логин: " + this.login);
+    }
+
+    @Override
+    public void password() {
+        System.out.println("Пароль: " + this.password);
+    }
+}
+
