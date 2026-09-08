@@ -1,0 +1,97 @@
+// Метод умножения двух целых чисел через битовые сдвиги 
+import java.util.Scanner;
+
+public class Main {
+    public static int umnozhenie(int chislo1, int chislo2) {
+        int rezultat = 0;
+        int mnozhitel = chislo2;   // второй множитель будем делить пополам
+        int mnozhimoe = chislo1;   // первый множитель будем удваивать
+
+        while (mnozhitel > 0) {
+            // Если текущий множитель нечётный, добавляем множимое к результату
+            if (mnozhitel % 2 == 1) {
+                rezultat += mnozhimoe;
+            }
+            // Удваиваем множимое и делим множитель нацело на 2
+            mnozhimoe += mnozhimoe;   // то же самое, что mnozhimoe * 2
+            mnozhitel /= 2;
+        }
+
+        return rezultat;
+    }
+
+    public static void main(String[] args) {
+        Scanner scanner = new Scanner(System.in);
+
+        System.out.print("Введите первое число: ");
+        int pervyy = scanner.nextInt();
+
+        System.out.print("Введите второе число: ");
+        int vtoroy = scanner.nextInt();
+
+        // Вычисляем произведение
+        int proizvedenie = umnozhenie(pervyy, vtoroy);
+        System.out.println("Результат умножения: " + proizvedenie);
+
+        scanner.close();
+    }
+}
+
+//
+import java.util.Scanner;
+
+public class Main {
+
+    // умножение через сложение в цикле
+    public static int multiplyByWhile(int a, int b) {
+        int result = 0;
+        while (b > 0) {
+            result += a;
+            b--;
+        }
+        return result;
+    }
+
+    // умножение через рекурсию
+    public static int multiplyByRecursion(int a, int b) {
+        if (b == 0) return 0;
+        return a + multiplyByRecursion(a, b - 1);
+    }
+
+    // умножение через битовые сдвиги
+    public static int multiplyByBits(int a, int b) {
+        int result = 0;
+        while (b > 0) {
+            if ((b & 1) == 1) {
+                result += a;
+            }
+            a <<= 1;
+            b >>= 1;
+        }
+        return result;
+    }
+
+    public static void main(String[] args) {
+        Scanner scanner = new Scanner(System.in);
+
+        System.out.print("Введите первое положительное число: ");
+        int num1 = scanner.nextInt();
+
+        System.out.print("Введите второе положительное число: ");
+        int num2 = scanner.nextInt();
+
+        // Проверка на положительность (как вы просили ранее)
+        if (num1 < 0 || num2 < 0) {
+            System.out.println("Ошибка: числа должны быть положительными!");
+            return;
+        }
+
+        // Вывод результатов
+        System.out.println("Результаты умножения " + num1 + " × " + num2 + ":");
+        System.out.println("1. Через сложение (while):   " + multiplyByWhile(num1, num2));
+        System.out.println("2. Рекурсивно:               " + multiplyByRecursion(num1, num2));
+        System.out.println("3. Через битовые сдвиги:     " + multiplyByBits(num1, num2));
+
+        scanner.close();
+    }
+}
