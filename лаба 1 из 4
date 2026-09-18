@@ -1,0 +1,28 @@
+import java.util.Scanner
+
+fun main() {
+    val scan = Scanner(System.`in`)
+
+    val N = scan.nextInt()
+    val x = scan.nextDouble()
+
+    var sum = 0.0
+
+    for (i in 0..N) {
+        sum += Math.pow(-1.0, i.toDouble()) *
+                Math.pow(x, i.toDouble()) /
+                factorial(i)
+    }
+
+    println(sum)
+}
+
+fun factorial(a: Int): Double {
+    var col = 1.0
+
+    for (j in 1..a) {
+        col *= j
+    }
+
+    return col
+}
