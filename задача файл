@@ -1,0 +1,53 @@
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.util.Scanner;
+
+public class Task17_342 {
+    public static void main(String[] args) throws FileNotFoundException {
+        Scanner sc = new Scanner(new File("17-342.txt"));
+        
+        // Считываем последовательность в массив
+        int[] a = new int[100000];
+        int n = 0;
+        while (sc.hasNextInt()) {
+            a[n++] = sc.nextInt();
+        }
+        sc.close();
+        
+        // Находим минимальное кратное 37 и максимальное кратное 73
+        int min37 = Integer.MAX_VALUE;
+        int max73 = Integer.MIN_VALUE;
+        
+        for (int i = 0; i < n; i++) {
+            if (a[i] % 37 == 0 && a[i] < min37) min37 = a[i];
+            if (a[i] % 73 == 0 && a[i] > max73) max73 = a[i];
+        }
+        
+        // Границы диапазона (упорядочен)
+        int low  = Math.min(min37, max73);
+        int high = Math.max(min37, max73);
+        
+        int count = 0;
+        int minSum = Integer.MAX_VALUE;
+        
+        // Перебираем пары подряд идущих элементов
+        for (int i = 0; i < n - 1; i++) {
+            int x = a[i];
+            int y = a[i + 1];
+            
+            // Считаем, сколько чисел пары СТРОГО между low и high
+            int inside = 0;
+            if (x > low && x < high) inside++;
+            if (y > low && y < high) inside++;
+            
+            // Ровно одно число внутри диапазона
+            if (inside == 1) {
+                count++;
+                int sum = x + y;
+                if (sum < minSum) minSum = sum;
+            }
+        }
+        
+        System.out.println(count + " " + minSum);
+    }
+}
