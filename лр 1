@@ -1,0 +1,74 @@
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
+
+public class ProcessManager {
+    public static void main(String[] args) throws IOException {
+        BufferedReader reader = new BufferedReader(new InputStreamReader(System.in));
+        
+        // Массив для хранения запущенных процессов
+        Process[] processes = new Process[3];
+        String[] names = new String[3];
+        
+        // Запускаем 3 процесса, имя каждого вводится с экрана
+        for (int i = 0; i < 3; i++) {
+            System.out.print("Введите имя процесса №" + (i + 1) + " (например, notepad, calc, mspaint): ");
+            String name = reader.readLine().trim();
+            names[i] = name;
+            
+            try {
+                ProcessBuilder pb = new ProcessBuilder(name);
+                processes[i] = pb.start();
+                System.out.println("Процесс \"" + name + "\" успешно запущен.\n");
+            } catch (IOException e) {
+                System.out.println("Не удалось запустить процесс \"" + name + "\": " + e.getMessage() + "\n");
+                processes[i] = null;
+            }
+        }
+        
+        // Выводим информацию о каждом процессе
+        System.out.println("ИНФОРМАЦИЯ О ПРОЦЕССАХ");
+        for (int i = 0; i < 3; i++) {
+            System.out.println("\nПроцесс №" + (i + 1) + ": " + names[i]);
+            if (processes[i] == null) {
+                System.out.println("  Статус: не запущен");
+                continue;
+            }
+            System.out.println("  PID (идентификатор): " + processes[i].pid());
+            System.out.println("  Работает: " + processes[i].isAlive());
+            System.out.println("  Команда: " + processes[i].info().command());
+            System.out.println("  Аргументы: " + processes[i].info().arguments());
+        }
+        
+        // Завершение процессов по запросу
+        System.out.println("ЗАВЕРШЕНИЕ ПРОЦЕССОВ");
+        for (int i = 0; i < 3; i++) {
+            if (processes[i] == null || !processes[i].isAlive()) {
+                System.out.println("Процесс \"" + names[i] + "\" не запущен, пропускаем.");
+                continue;
+            }
+            
+            System.out.print("Завершить процесс \"" + names[i] + "\" (PID " 
+                    + processes[i].pid() + ")? д/н: ");
+            String answer = reader.readLine().trim().toLowerCase();
+            
+            if (answer.equals("д") || answer.equals("да") || answer.equals("y") || answer.equals("yes")) {
+                processes[i].destroy();
+                System.out.println("  Процесс \"" + names[i] + "\" завершён.");
+            } else {
+                System.out.println("  Процесс \"" + names[i] + "\" оставлен работать.");
+            }
+        }
+        
+        // Итоговая информация
+        System.out.println("ИТОГ");
+        for (int i = 0; i < 3; i++) {
+            System.out.println("Процесс \"" + names[i] + "\": " 
+                    + (processes[i] != null && processes[i].isAlive() 
+                       ? "работает (PID " + processes[i].pid() + ")" 
+                       : "завершён/не запущен"));
+        }
+        
+        reader.close();
+    }
+}
