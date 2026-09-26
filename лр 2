@@ -1,0 +1,100 @@
+public class RabbitAndTurtle {
+
+    // Класс AnimalThread 
+    static class AnimalThread extends Thread {
+        private String name;      // имя потока
+        private int priority;     // приоритет потока
+        private int distance = 0; // счётчик преодолённых метров
+        private static final int FINISH = 100; // дистанция
+
+        // Конструктор: имя и приоритет передаются извне
+        public AnimalThread(String name, int priority) {
+            this.name = name;
+            this.priority = priority;
+            setName(name);
+            setPriority(priority);
+        }
+
+        public int getDistance() {
+            return distance;
+        }
+
+        @Override
+        public void run() {
+            while (distance < FINISH) {
+                try {
+                    // Чем выше приоритет — тем меньше пауза (быстрее бежит)
+                    int sleepTime = 110 - getPriority() * 10;
+                    Thread.sleep(Math.max(sleepTime, 1));
+                } catch (InterruptedException e) {
+                    return;
+                }
+                distance++;
+                System.out.println(name + " пробежал " + distance + " м");
+            }
+            System.out.println(">>> " + name + " ФИНИШИРОВАЛ! <<<");
+        }
+    }
+
+    // Точка входа 
+    public static void main(String[] args) throws InterruptedException {
+        System.out.println("ДОГОНЯЛКИ: Кролик vs Черепаха");
+
+        // Создание потоков: имя и приоритет через конструктор
+        AnimalThread rabbit = new AnimalThread("Кролик", Thread.MAX_PRIORITY);   // 10
+        AnimalThread turtle = new AnimalThread("Черепаха", Thread.MIN_PRIORITY); // 1
+
+        // Запуск потоков
+        rabbit.start();
+        turtle.start();
+
+        // Динамическое изменение приоритетов:
+        // отставшая зверушка должна догнать и перегнать соперника
+        while (rabbit.isAlive() && turtle.isAlive()) {
+            Thread.sleep(200);
+
+            int rDist = rabbit.getDistance();
+            int tDist = turtle.getDistance();
+
+            if (rDist < tDist) {
+                // Кролик отстаёт — повышаем ему приоритет, Черепахе понижаем
+                if (rabbit.getPriority() < Thread.MAX_PRIORITY) {
+                    rabbit.setPriority(rabbit.getPriority() + 1);
+                }
+                if (turtle.getPriority() > Thread.MIN_PRIORITY) {
+                    turtle.setPriority(turtle.getPriority() - 1);
+                }
+                System.out.println("[!] Кролик отстаёт (" + rDist + " vs " + tDist
+                        + ") → Кролик: " + rabbit.getPriority()
+                        + ", Черепаха: " + turtle.getPriority());
+            } else if (tDist < rDist) {
+                // Черепаха отстаёт — повышаем ей приоритет, Кролику понижаем
+                if (turtle.getPriority() < Thread.MAX_PRIORITY) {
+                    turtle.setPriority(turtle.getPriority() + 1);
+                }
+                if (rabbit.getPriority() > Thread.MIN_PRIORITY) {
+                    rabbit.setPriority(rabbit.getPriority() - 1);
+                }
+                System.out.println("[!] Черепаха отстаёт (" + tDist + " vs " + rDist
+                        + ") → Кролик: " + rabbit.getPriority()
+                        + ", Черепаха: " + turtle.getPriority());
+            }
+        }
+
+        rabbit.join();
+        turtle.join();
+
+        // Анализ результатов
+        System.out.println("РЕЗУЛЬТАТ");
+        System.out.println("Кролик:   " + rabbit.getDistance() + " м");
+        System.out.println("Черепаха: " + turtle.getDistance() + " м");
+
+        if (rabbit.getDistance() > turtle.getDistance()) {
+            System.out.println("Победил Кролик!");
+        } else if (turtle.getDistance() > rabbit.getDistance()) {
+            System.out.println("Победила Черепаха!");
+        } else {
+            System.out.println("Ничья!");
+        }
+    }
+}
