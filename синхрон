@@ -1,0 +1,71 @@
+public class ChickenEggDebateSync {
+
+    // Общий объект-монитор и флаг очереди
+    private static final Object lock = new Object();
+    // true — ход курицы, false — ход яйца
+    private static boolean chickenTurn = true;
+    // Кто сказал последним: 0 — никто, 1 — курица, 2 — яйцо
+    private static int lastWord = 0;
+
+    public static void main(String[] args) throws InterruptedException {
+
+        Thread chicken = new Thread(() -> {
+            for (int i = 0; i < 5; i++) {
+                synchronized (lock) {
+                    // Ждём своей очереди
+                    while (!chickenTurn) {
+                        try {
+                            lock.wait();
+                        } catch (InterruptedException e) {
+                            return;
+                        }
+                    }
+                    System.out.println("Курица");
+                    lastWord = 1;
+                    chickenTurn = false;
+                    lock.notifyAll();
+                }
+            }
+        });
+
+        Thread egg = new Thread(() -> {
+            for (int i = 0; i < 5; i++) {
+                synchronized (lock) {
+                    // Ждём своей очереди
+                    while (chickenTurn) {
+                        try {
+                            lock.wait();
+                        } catch (InterruptedException e) {
+                            return;
+                        }
+                    }
+                    System.out.println("Яйцо");
+                    lastWord = 2;
+                    chickenTurn = true;
+                    lock.notifyAll();
+                }
+            }
+        });
+
+        chicken.start();
+        egg.start();
+
+        // Ждём завершения потоков
+        chicken.join();
+        egg.join();
+
+        // isAlive() — оба должны быть false
+        System.out.println("Курица жива: " + chicken.isAlive());
+        System.out.println("Яйцо живо: " + egg.isAlive());
+
+        // Итог спора
+        System.out.print("Спор окончен. Победила ");
+        if (lastWord == 1) {
+            System.out.println("Курица");
+        } else if (lastWord == 2) {
+            System.out.println("Яйцо");
+        } else {
+            System.out.println("ничья");
+        }
+    }
+}
