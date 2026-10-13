@@ -1,0 +1,47 @@
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
+
+public class ProcessManager {
+
+    public static void main(String[] args) {
+        BufferedReader reader = new BufferedReader(new InputStreamReader(System.in));
+
+        try {
+            // Запускаем 3 процесса
+            for (int i = 1; i <= 3; i++) {
+                System.out.println("\n=== Процесс #" + i + " ===");
+                System.out.print("Введите имя процесса (например: notepad, calc, mspaint): ");
+                String processName = reader.readLine().trim();
+
+                Process process;
+                try {
+                    process = new ProcessBuilder(processName).start();
+                } catch (IOException e) {
+                    System.out.println("Не удалось запустить процесс: " + processName);
+                    continue;
+                }
+
+                // Информация о процессе
+                System.out.println("Процесс запущен!");
+                System.out.println("Имя процесса (команда): " + processName);
+                System.out.println("PID процесса: " + process.pid());
+                System.out.println("Процесс активен: " + process.isAlive());
+
+                // Запрос на завершение
+                System.out.print("Завершить (д/н)? ");
+                String answer = reader.readLine().trim().toLowerCase();
+
+                if (answer.equals("д") || answer.equals("y") || answer.equals("да")) {
+                    process.destroy();
+                    process.waitFor();
+                    System.out.println("Процесс завершён. Активен: " + process.isAlive());
+                } else {
+                    System.out.println("Процесс оставлен работать.");
+                }
+            }
+        } catch (IOException | InterruptedException e) {
+            e.printStackTrace();
+        }
+    }
+}
