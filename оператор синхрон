@@ -1,0 +1,60 @@
+public class ChickenEgg {
+
+    // Объект-замок для синхронизации
+    private static final Object lock = new Object();
+
+    // 0 — никто, 1 — курица, 2 — яйцо
+    private static int lastWord = 0;
+
+    public static void main(String[] args) throws InterruptedException {
+
+        Thread chicken = new Thread(() -> {
+            for (int i = 0; i < 5; i++) {
+                System.out.println("Курица");
+                synchronized (lock) {          // ← синхронизированный оператор
+                    lastWord = 1;
+                }
+                try {
+                    Thread.sleep(50);
+                } catch (InterruptedException e) {
+                    return;
+                }
+            }
+        });
+
+        Thread egg = new Thread(() -> {
+            for (int i = 0; i < 4; i++) {
+                System.out.println("Яйцо");
+                synchronized (lock) {          // синхронизированный оператор
+                    lastWord = 2;
+                }
+                try {
+                    Thread.sleep(70);
+                } catch (InterruptedException e) {
+                    return;
+                }
+            }
+        });
+
+        chicken.start();
+        egg.start();
+
+        chicken.join();
+        egg.join();
+
+        // Чтение результата тоже под синхронизацией
+        int result;
+        synchronized (lock) {
+            result = lastWord;
+        }
+
+        System.out.print("Спор окончен. Победила ");
+        if (result == 1) {
+            System.out.println("Курица");
+        } else if (result == 2) {
+            System.out.println("Яйцо");
+        } else {
+            System.out.println("ничья");
+        }
+    }
+}
