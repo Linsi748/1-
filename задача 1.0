@@ -1,0 +1,39 @@
+//1 код 
+package ru.demo.interference1;
+
+public class Main {
+    public static void main(String[] args) throws InterruptedException {
+        InterferenceExample example = new InterferenceExample(2); // 2 потока
+        example.startThreads();
+        Thread.sleep(1000);          // работаем 1 секунду
+        example.setStop();           // сигнал остановки
+        example.joinThreads();       // дождаться завершения
+        System.out.println("AtomicInteger: " + example.getTotal());
+    }
+}
+//2 вариант кода счетчиком
+package ru.demo.interference1;
+
+public class Main {
+    public static void main(String[] args) throws InterruptedException {
+        InterferenceExample example = new InterferenceExample(2);
+        example.startThreads();
+        Thread.sleep(1000);
+        example.setStop();
+        example.joinThreads();
+        System.out.println("synchronized: " + example.getTotal());
+    }
+}
+//3 ариант кода
+package ru.demo.interference1;
+
+public class Main {
+    public static void main(String[] args) throws InterruptedException {
+        InterferenceExample example = new InterferenceExample(2);
+        example.startThreads();
+        Thread.sleep(1000);
+        example.setStop();
+        example.joinThreads();
+        System.out.println("ReentrantLock: " + example.getTotal());
+    }
+}
