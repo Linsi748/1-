@@ -1,0 +1,120 @@
+import java.util.concurrent.atomic.AtomicInteger; //1 способ атомарный
+
+public class InterferenceThread extends Thread {
+    private final InterferenceExample checker;
+    private static final AtomicInteger i = new AtomicInteger(0);
+
+    InterferenceThread(InterferenceExample checker) {
+        this.checker = checker;
+    }
+
+    private void increment() {
+        i.incrementAndGet(); // атомарно
+    }
+
+    int getI() {
+        return i.get();
+    }
+
+    @Override
+    public void run() {
+        while (!checker.stop()) {
+            increment();
+        }
+    }
+}
+//второй способ метод блок
+public class InterferenceThread extends Thread {
+    private final InterferenceExample checker;
+    private static int i;
+    private static final Object lock = new Object();
+
+    InterferenceThread(InterferenceExample checker) {
+        this.checker = checker;
+    }
+
+    private void increment() {
+        synchronized (lock) {
+            i++;
+        }
+    }
+
+    int getI() {
+        synchronized (lock) {
+            return i;
+        }
+    }
+
+    @Override
+    public void run() {
+        while (!checker.stop()) {
+            increment();
+        }
+    }
+// 3 способ явная блокировка
+import java.util.concurrent.locks.ReentrantLock;
+
+public class InterferenceThread extends Thread {
+    private final InterferenceExample checker;
+    private static int i;
+    private static final ReentrantLock lock = new ReentrantLock();
+
+    InterferenceThread(InterferenceExample checker) {
+        this.checker = checker;
+    }
+
+    private void increment() {
+        lock.lock();
+        try {
+            i++;
+        } finally {
+            lock.unlock();
+        }
+    }
+
+    int getI() {
+        lock.lock();
+        try {
+            return i;
+        } finally {
+            lock.unlock();
+        }
+    }
+
+    @Override
+    public void run() {
+        while (!checker.stop()) {
+            increment();
+        }
+    }
+}
+}
+//4 способ ручная редукция
+import java.util.concurrent.atomic.LongAccumulator;
+
+public class InterferenceThread extends Thread {
+    private final InterferenceExample checker;
+    // накопитель: 0 — начальное значение, Long::sum — операция
+    private static final LongAccumulator i =
+            new LongAccumulator(Long::sum, 0L);
+
+    InterferenceThread(InterferenceExample checker) {
+        this.checker = checker;
+    }
+
+    private void increment() {
+        i.accumulate(1L);
+    }
+
+    int getI() {
+        return (int) i.get();
+    }
+
+    @Override
+    public void run() {
+        while (!checker.stop()) {
+            increment();
+        }
+    }
+}
+
