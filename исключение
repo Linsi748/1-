@@ -1,0 +1,112 @@
+import java.io.*;
+import java.net.URL;
+import java.nio.file.Files;
+import java.nio.file.Paths;
+import java.util.Scanner;
+
+// 1. Базовое исключение с КОДОМ ошибки
+class DownloadException extends Exception {
+    enum Code { EMPTY_URL, EMPTY_NAME, NETWORK, EMPTY_FILE }
+
+    private final Code code;
+
+    DownloadException(String msg, Code code) {
+        super(msg);
+        this.code = code;
+    }
+
+    DownloadException(String msg, Code code, Throwable cause) {
+        super(msg, cause);
+        this.code = code;
+    }
+
+    Code getCode() { return code; }
+}
+
+// 2. Наследники — разные причины 
+class NetworkException extends DownloadException {
+    NetworkException(String msg, Throwable cause) {
+        super(msg, Code.NETWORK, cause);
+    }
+}
+
+class BadLinkException extends DownloadException {
+    BadLinkException(String msg) {
+        super(msg, Code.EMPTY_URL);
+    }
+}
+
+public class Main {
+
+    public static void main(String[] args) {
+        Scanner sc = new Scanner(System.in);
+        System.out.println("СКАЧИВАНИЕ КАРТИНОК");
+        System.out.print("Откуда ссылки? (1 - клавиатура, 2 - файл links.txt): ");
+
+        if (sc.nextLine().trim().equals("2")) {
+            try {
+                for (String line : Files.readAllLines(Paths.get("links.txt"))) {
+                    String url = line.trim();
+                    if (url.isEmpty()) continue;
+                    String name = url.substring(url.lastIndexOf('/') + 1);
+                    handleOne(url, name);
+                }
+            } catch (IOException e) {
+                System.out.println("Не прочитать links.txt: " + e.getMessage());
+            }
+        } else {
+            System.out.print("Ссылка: ");
+            String url = sc.nextLine().trim();
+            System.out.print("Имя файла: ");
+            String name = sc.nextLine().trim();
+            handleOne(url, name);
+        }
+    }
+
+    // отдельный метод — чтобы не дублировать try/catch
+    static void handleOne(String url, String name) {
+        try {
+            grab(url, name);
+            System.out.println("ГОТОВО: " + name);
+        } catch (BadLinkException e) {
+            System.out.println("[ссылка] " + e.getMessage());
+        } catch (NetworkException e) {
+            System.out.println("[сеть] " + e.getMessage()
+                    + " | причина: " + e.getCause().getClass().getSimpleName());
+        } catch (DownloadException e) {
+            // сюда попадёт EMPTY_FILE и всё, что не поймали выше
+            System.out.println("[" + e.getCode() + "] " + e.getMessage());
+        }
+    }
+
+    // ===== 3. Скачивание: try-with-resources, без finally =====
+    static void grab(String url, String name) throws DownloadException {
+        if (url == null || url.isEmpty())
+            throw new BadLinkException("пустая ссылка");
+        if (name == null || name.isEmpty())
+            throw new DownloadException("пустое имя", DownloadException.Code.EMPTY_NAME);
+
+        try (InputStream in = new BufferedInputStream(new URL(url).openStream());
+             OutputStream out = new FileOutputStream(name)) {
+
+            byte[] buf = new byte[1024];
+            int n;
+            long total = 0;
+
+            System.out.println("Качаю...");
+            while ((n = in.read(buf)) != -1) {
+                out.write(buf, 0, n);
+                total += n;
+                System.out.print("\rСкачано: " + (total / 1024) + " КБ");
+            }
+            System.out.println();
+
+            if (total == 0)
+                throw new DownloadException("файл нулевой длины",
+                        DownloadException.Code.EMPTY_FILE);
+
+        } catch (IOException e) {
+            throw new NetworkException("не удалось получить данные", e);
+        }
+    }
+}
