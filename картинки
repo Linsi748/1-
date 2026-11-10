@@ -1,0 +1,60 @@
+import java.io.*;
+import java.net.URL;
+import java.nio.file.Files;
+import java.nio.file.Paths;
+import java.util.Scanner;
+
+public class Main {
+
+    public static void main(String[] args) throws IOException {
+        Scanner sc = new Scanner(System.in);
+        System.out.println("СКАЧИВАНИЕ КАРТИНОК");
+        System.out.print("Откуда ссылки? (1 - клавиатура, 2 - файл links.txt): ");
+
+        if (sc.nextLine().trim().equals("2")) {
+            for (String url : Files.readAllLines(Paths.get("links.txt"))) {
+                url = url.trim();
+                if (url.isEmpty()) continue;
+                String name = url.substring(url.lastIndexOf('/') + 1);
+                try {
+                    download(url, name);
+                    System.out.println("ГОТОВО: " + name);
+                } catch (Exception e) {
+                    System.out.println("ОШИБКА: " + e.getMessage());
+                }
+            }
+        } else {
+            System.out.print("Ссылка: ");
+            String url = sc.nextLine().trim();
+            System.out.print("Имя файла: ");
+            String name = sc.nextLine().trim();
+            try {
+                download(url, name);
+                System.out.println("ГОТОВО: " + name);
+            } catch (Exception e) {
+                System.out.println("ОШИБКА: " + e.getMessage());
+            }
+        }
+    }
+
+    // ===== метод из ЛР 6 — БЕЗ ИЗМЕНЕНИЙ =====
+    public static void download(String urlString, String fileName) throws IOException {
+        BufferedInputStream in = new BufferedInputStream(new URL(urlString).openStream());
+        FileOutputStream out = new FileOutputStream(fileName);
+        try {
+            byte[] data = new byte[1024];
+            int count;
+            long total = 0;
+            System.out.println("Качаю...");
+            while ((count = in.read(data, 0, 1024)) != -1) {
+                out.write(data, 0, count);
+                total += count;
+                System.out.print("\rСкачано: " + (total / 1024) + " КБ");
+            }
+            System.out.println();
+        } finally {
+            if (in != null) in.close();
+            if (out != null) out.close();
+        }
+    }
+}
