@@ -1,0 +1,33 @@
+package ru.demo.interferense;
+
+/**
+ * Запуск потоков в произвольном порядке
+ */
+public class Main {
+    public static void main(String[] args) throws InterruptedException {
+        RandomRunExample.example();
+    }
+}
+
+class RandomRunExample extends Thread {
+
+    @Override
+    public void run() {
+        System.out.println(Thread.currentThread().getName());
+    }
+
+    public static void example() throws InterruptedException {
+        Thread[] threads = new Thread[10];
+
+        for (int i = 0; i < threads.length; i++) {
+            threads[i] = new RandomRunExample();
+            threads[i].start();
+        }
+
+        // БЫЛО: потоков запустили и ушли — main мог закончиться раньше, чем потоки напечатают
+        // СТАЛО: ждём завершения каждого потока
+        for (Thread t : threads) {
+            t.join();
+        }
+    }
+}
