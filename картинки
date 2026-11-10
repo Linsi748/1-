@@ -37,7 +37,7 @@ public class Main {
         }
     }
 
-    // ===== метод из ЛР 6 — БЕЗ ИЗМЕНЕНИЙ =====
+    
     public static void download(String urlString, String fileName) throws IOException {
         BufferedInputStream in = new BufferedInputStream(new URL(urlString).openStream());
         FileOutputStream out = new FileOutputStream(fileName);
