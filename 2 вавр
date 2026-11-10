@@ -1,0 +1,27 @@
+package ru.demo.interference1;
+
+public class InterferenceThread extends Thread {
+    private final InterferenceExample checker;
+
+    private static int i;
+    private static final Object lock = new Object();
+
+    InterferenceThread(InterferenceExample checker) {
+        this.checker = checker;
+    }
+
+    private static void increment() {
+        synchronized (lock) { i++; }
+    }
+
+    @Override
+    public void run() {
+        while (!checker.stop()) {
+            increment();
+        }
+    }
+
+    static int getI() {
+        synchronized (lock) { return i; }
+    }
+}
