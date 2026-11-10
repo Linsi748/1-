@@ -1,0 +1,68 @@
+package ru.demo.interferense;
+
+import java.util.concurrent.atomic.AtomicInteger;
+
+public class Main {
+    public static void main(String[] args) throws InterruptedException {
+        InterferenceExample example = new InterferenceExample();
+        example.runExample();
+    }
+}
+
+//  Счётчик, защищённый от гонки 
+class StateObject {
+    // БЫЛО: private int i;  и  i++  — неатомарно, потоки теряли инкременты
+    // СТАЛО: AtomicInteger — инкремент неделим
+    private final AtomicInteger i = new AtomicInteger();
+
+    void increment() {
+        i.incrementAndGet();
+    }
+
+    int getI() {
+        return i.get();
+    }
+}
+
+// поток
+class InterferenceThread extends Thread {
+    private final InterferenceExample checker;
+    private final StateObject stateObject;
+
+    InterferenceThread(InterferenceExample checker, StateObject stateObject) {
+        this.checker = checker;
+        this.stateObject = stateObject;
+    }
+
+    @Override
+    public void run() {
+        while (!checker.stop()) {
+            stateObject.increment();
+        }
+    }
+}
+
+// запуск и проверка
+class InterferenceExample {
+    private static final int HUNDRED_MILLION = 100_000_000;
+
+    private final AtomicInteger counter = new AtomicInteger();
+    private final StateObject stateObject = new StateObject();
+
+    boolean stop() {
+        return counter.incrementAndGet() > HUNDRED_MILLION;
+    }
+
+    void runExample() throws InterruptedException {
+        InterferenceThread t1 = new InterferenceThread(this, stateObject);
+        InterferenceThread t2 = new InterferenceThread(this, stateObject);
+
+        t1.start();
+        t2.start();
+        t1.join();
+        t2.join();
+
+        System.out.println("Expected: " + HUNDRED_MILLION);
+        System.out.println("Result:   " + stateObject.getI());
+    }
+}
