@@ -1,0 +1,59 @@
+import java.io.*;
+import java.nio.file.*;
+import java.util.concurrent.*;
+
+public class Main {
+
+    // ===== Копирование одного файла =====
+    static void copyFile(String from, String toPath) throws IOException {
+        Path src = Paths.get(from);
+        Path dst = Paths.get(toPath);
+
+        if (Files.isDirectory(dst)) {
+            dst = dst.resolve(src.getFileName());
+        }
+
+        try (InputStream in = new BufferedInputStream(Files.newInputStream(src));
+             OutputStream out = new BufferedOutputStream(Files.newOutputStream(dst))) {
+            byte[] buf = new byte[8192];
+            int n;
+            while ((n = in.read(buf)) != -1) {
+                out.write(buf, 0, n);
+            }
+        }
+        System.out.println("Скопирован: " + src + " -> " + dst);
+    }
+
+    public static void main(String[] args) throws Exception {
+
+        String file1 = "a.txt";
+        String file2 = "b.txt";
+        String destPath = "out";
+
+        Files.createDirectories(Paths.get(destPath));
+
+        // ПОСЛЕДОВАТЕЛЬНО
+        long t1 = System.nanoTime();
+        copyFile(file1, destPath);
+        copyFile(file2, destPath);
+        long t2 = System.nanoTime();
+        System.out.printf("Последовательно: %.2f мс%n", (t2 - t1) / 1_000_000.0);
+
+        // ПАРАЛЛЕЛЬНО 
+        ExecutorService pool = Executors.newFixedThreadPool(2);
+
+        long t3 = System.nanoTime();
+        Future<?> f1 = pool.submit(() -> {
+            try { copyFile(file1, destPath); } catch (IOException e) { throw new RuntimeException(e); }
+        });
+        Future<?> f2 = pool.submit(() -> {
+            try { copyFile(file2, destPath); } catch (IOException e) { throw new RuntimeException(e); }
+        });
+        f1.get();
+        f2.get();
+        long t4 = System.nanoTime();
+        System.out.printf("Параллельно:     %.2f мс%n", (t4 - t3) / 1_000_000.0);
+
+        pool.shutdown();
+    }
+}
