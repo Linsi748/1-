@@ -1,0 +1,57 @@
+package ru.demo.interference1;
+
+public class InterferenceThread extends Thread {
+    private final InterferenceExample checker;
+
+    private static int i;                               // обычный int
+    private static final Object lock = new Object();    // мьютекс
+
+    InterferenceThread(InterferenceExample checker) {
+        this.checker = checker;
+    }
+
+    private static void increment() {
+        synchronized (lock) {   // один поток за раз
+            i++;
+        }
+    }
+
+    @Override
+    public void run() {
+        while (!checker.stop()) {
+            increment();
+        }
+    }
+
+    static int getI() {
+        synchronized (lock) {
+            return i;
+        }
+    }
+}
+
+//2 вариант
+package ru.demo.interference1;
+
+import java.util.concurrent.atomic.AtomicInteger;
+
+public class InterferenceThread extends Thread {
+    private final InterferenceExample checker;
+
+    private static final AtomicInteger i = new AtomicInteger();   // атомарный счётчик
+
+    InterferenceThread(InterferenceExample checker) {
+        this.checker = checker;
+    }
+
+    @Override
+    public void run() {
+        while (!checker.stop()) {
+            i.incrementAndGet();   // атомарно
+        }
+    }
+
+    static int getI() {
+        return i.get();
+    }
+}
