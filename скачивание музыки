@@ -1,0 +1,40 @@
+import java.io.*;
+import java.net.URL;
+import java.util.Scanner;
+
+public class Main {
+
+    public static void main(String[] args) {
+        Scanner sc = new Scanner(System.in);
+
+        System.out.print("Ссылка на файл: ");
+        String url = sc.nextLine().trim();
+
+        System.out.print("Имя файла: ");
+        String name = sc.nextLine().trim();
+
+        try {
+            download(url, name);
+            System.out.println("Готово!");
+        } catch (Exception e) {
+            System.out.println("Ошибка: " + e.getMessage());
+        }
+    }
+
+    static void download(String url, String name) throws IOException {
+        try (InputStream in = new URL(url).openStream();
+             FileOutputStream out = new FileOutputStream(name)) {
+
+            byte[] buf = new byte[4096];
+            int n;
+            long total = 0;
+
+            while ((n = in.read(buf)) != -1) {
+                out.write(buf, 0, n);
+                total += n;
+                System.out.print("\rСкачано: " + total / 1024 + " КБ");
+            }
+            System.out.println();
+        }
+    }
+}
